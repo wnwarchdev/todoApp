@@ -1,0 +1,14 @@
+{
+  "name": "todoApp",
+  "version": "1.0.0",
+  "description": "simple to-do app with websocket",
+  "main": "server.js",
+  "repository": "git@github.com:wnwarchdev/todoApp.git",
+  "author": "Wojtek Nowak <billnewmann@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "gitignore": "^0.6.0",
+    "nodemon": "^2.0.4"
+  }
+}
