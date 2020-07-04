@@ -4,12 +4,15 @@ import io from 'socket.io-client';
 class App extends React.Component {
 
   state = {
-    tasks: ['dog','cat','fish'],
+    tasks: [],
     taskName: '',
   }
 
   componentDidMount(){
     this.socket = io('http://localhost:8000');
+    this.socket.on('addTask', (task) => this.addTask(task));
+    this.socket.on('removeTask', (id) => this.removeTask(id));
+    this.socket.on('updateData', (tasks) => this.updateTask(tasks));
   }
 
   removeTask(index) {
@@ -23,14 +26,25 @@ class App extends React.Component {
     this.socket.emit('removeTask', { index: index });
   }
 
-  submitForm(event) {
+  submitForm = event => {
     event.preventDefault();
-    this.addTask();
+    this.addTask(this.state.taskName);
+    this.socket.emit('addTask', this.state.taskName);
   }
 
   addTask(task) {
-
+    this.setState({
+      tasks: [...this.state.tasks, task],
+    })
   }
+
+  updateTask(tasks) {
+    this.setState({
+      tasks:  [ ...tasks],
+    });
+  }
+
+
 
 
 
