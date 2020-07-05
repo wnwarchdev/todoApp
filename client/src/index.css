@@ -73,3 +73,11 @@ p {
   align-items: center;
   border-bottom: 1px dashed rgb(83, 83, 83);
 }
+
+.super {
+  border: 1px solid white;
+  width: 150px;
+  opacity: .5;
+  transform: translateX(-130%);
+  position: absolute;
+}

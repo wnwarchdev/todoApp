@@ -1,5 +1,6 @@
 import React from 'react';
 import io from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
 
 class App extends React.Component {
 
@@ -15,21 +16,26 @@ class App extends React.Component {
     this.socket.on('updateData', (tasks) => this.updateTask(tasks));
   }
 
-  removeTask(index) {
-    console.log(index)
-    const array = this.state.tasks;
-    array.splice(index, 1);
-    console.log(array);
+  removeTask(id, execute) {
+    //console.log('id is: ',id)
+    const ind = this.state.tasks.findIndex(item => item.id === id)
+    //console.log('ind is: ',ind)
+    console.log(this.state.tasks)
+    const allTasks = this.state.tasks
+    allTasks.splice(ind, 1)
     this.setState({
-      tasks: array
+      tasks: allTasks
     })
-    this.socket.emit('removeTask', { index: index });
+    if (execute === true) {
+      this.socket.emit('removeTask', (id));
+    }
   }
 
-  submitForm = event => {
+  submitForm = event =>{
     event.preventDefault();
-    this.addTask(this.state.taskName);
-    this.socket.emit('addTask', this.state.taskName);
+    const randomId =uuidv4();
+    this.addTask({id: randomId, name:this.state.taskName});
+    this.socket.emit('addTask',{id:randomId, name:this.state.taskName});
   }
 
   addTask(task) {
@@ -45,13 +51,12 @@ class App extends React.Component {
   }
 
 
-
-
-
-
-  
-
   render() {
+
+    const taskList = this.state.tasks.map((task, index) =>(
+      <li key={index} className="task"><sup className="super">{task.id}</sup>{task.name}<button className="btn btn--red" onClick={() => this.removeTask(task.id, true)}>Remove</button></li>
+    ));
+
     return (
       <div className="App">
     
@@ -63,13 +68,11 @@ class App extends React.Component {
           <h2>Tasks</h2>
     
           <ul className="tasks-section__list" id="tasks-list">
-            {this.state.tasks.map(task => (
-              <li key={task} className="task">{task}<button className="btn btn--red" onClick={() => this.removeTask(this.state.tasks.indexOf(task))}>Remove</button></li>
-            ))}
+            {taskList}
           </ul>
     
           <form id="add-task-form" onSubmit={this.submitForm}>
-            <input className="text-input" autoComplete="off" type="text" placeholder="Type your description" id="task-name" value={this.state.taskName} onChange={event => this.setState({taskName: event.target.value})}  />
+            <input className="text-input" autoComplete="off" type="text" required placeholder="Type your description" id="task-name" value={this.state.taskName} onChange={event => this.setState({taskName: event.target.value})}  />
             <button className="btn" type="submit">Add</button>
           </form>
     
